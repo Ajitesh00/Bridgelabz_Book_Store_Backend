@@ -4,7 +4,6 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Book extends Model {
     static associate(models) {
-      // define associations if needed
       Book.belongsTo(models.Admin, {
         foreignKey: 'admin_user_id'
       });
@@ -15,11 +14,37 @@ module.exports = (sequelize, DataTypes) => {
     {
       id: {
         type: DataTypes.STRING,
-        primaryKey: true
+        primaryKey: true,
+        allowNull: false
       },
-      description: DataTypes.TEXT,
-      discountPrice: DataTypes.INTEGER,
-      bookImage: DataTypes.TEXT,
+      bookName: {
+        type: DataTypes.TEXT,
+        allowNull: false
+      },
+      author: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      description: {
+        type: DataTypes.TEXT,
+        allowNull: false
+      },
+      price: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      discountPrice: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      bookImage: {
+        type: DataTypes.TEXT,
+        allowNull: false
+      },
       admin_user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -28,13 +53,18 @@ module.exports = (sequelize, DataTypes) => {
           key: 'id'
         }
       },
-      bookName: DataTypes.TEXT,
-      author: DataTypes.STRING,
-      quantity: DataTypes.INTEGER,
-      price: DataTypes.INTEGER,
-      createdAt: DataTypes.DATE,
-      updatedAt: DataTypes.DATE,
-      __v: DataTypes.INTEGER
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false
+      },
+      __v: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
+      }
     },
     {
       sequelize,

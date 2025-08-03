@@ -1,14 +1,47 @@
 import sequelize, { DataTypes } from '../config/database.js';
 const Book = require('../models/book')(sequelize, DataTypes);
+import { Op } from 'sequelize';
 
 // Get all books
-export const getAllBooks = async () => {
+export const getAllBooks = async (page, limit, sortBy) => {
   try {
-    const books = await Book.findAll();
+    const offset = (page - 1) * limit;
+
+
+    console.log("**************"+sortBy);
+
+
+    let order = [];
+    
+    switch (sortBy) {
+      case 'price_low_to_high':
+        order = [['discountPrice', 'ASC']];
+        break;
+      case 'price_high_to_low':
+        order = [['discountPrice', 'DESC']];
+        break;
+      case 'newest_arrivals':
+        order = [['createdAt', 'DESC']];
+        break;
+      default:
+        order = [['id', 'ASC']]; // Default sort: relevance
+    }
+
+
+    console.log('*******************************Order:', order);
+
+
+    const { count, rows } = await Book.findAndCountAll({
+      offset,
+      limit,
+      order
+    });
+
     return {
-      code: 200,
-      message: 'Books retrieved successfully',
-      data: books
+      currentPage: page,
+      totalPages: Math.ceil(count / limit),
+      totalRecords: count,
+      books: rows
     };
   } catch (error) {
     console.error('Error in getAllBooks:', error);
@@ -115,6 +148,68 @@ export const deleteBook = async (id) => {
       code: error.code || 500,
       message: error.message || 'Failed to delete book',
       data: {}
+    };
+  }
+};
+
+export const searchBooks = async (searchQuery) => {
+  try {
+    const books = await Book.findAll({
+      where: {
+        [Op.or]: [
+          { bookName: { [Op.like]: `%${searchQuery}%` } },
+          { description: { [Op.like]: `%${searchQuery}%` } },
+          { author: { [Op.like]: `%${searchQuery}%` } }
+        ]
+      }
+    });
+
+    return {
+      count: books.length,
+      results: books
+    };
+  } catch (error) {
+    console.error('Error in searchBooks:', error);
+    return {
+      code: error.code || 500,
+      message: error.message || 'Failed to search books',
+      data: []
+    };
+  }
+};
+
+export const sortBooks = async (sortBy) => {
+  try {
+    let orderClause = [];
+
+    switch (sortBy) {
+      case 'price_low_to_high':
+        orderClause.push(['price', 'ASC']);
+        break;
+      case 'price_high_to_low':
+        orderClause.push(['price', 'DESC']);
+        break;
+      case 'newest_arrivals':
+        orderClause.push(['createdAt', 'DESC']);
+        break;
+      // relevance = no specific order
+    }
+
+    const books = await Book.findAll({
+      order: orderClause
+    });
+
+    return {
+      sortBy,
+      count: books.length,
+      results: books
+    };
+  } catch (error) {
+    console.error('Error in sortBooks:', error);
+    return {
+      code: error.code || 500,
+      message: error.message || 'Failed to sort books',
+      data: []
     };
   }
 };

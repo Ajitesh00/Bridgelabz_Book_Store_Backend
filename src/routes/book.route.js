@@ -6,10 +6,16 @@ const router = express.Router();
 
 // Public (authenticated) routes
 router.get('/', userAuth, bookController.getAllBooks);
-router.get('/:id', userAuth, bookController.getBookById);
+router.post('/', userAuth, bookController.addBook);
+
+// Search books by query (public)
+router.get('/search/query', userAuth, bookController.searchBooks);
+
+// Sort books by price (public)
+router.get('/sort', userAuth, bookController.sortBooks);
 
 // Admin-only routes
-router.post('/', userAuth, bookController.addBook);
+router.get('/:id', userAuth, bookController.getBookById);
 router.put('/:id', userAuth, bookController.updateBook);
 router.delete('/:id', userAuth, bookController.deleteBook);
 

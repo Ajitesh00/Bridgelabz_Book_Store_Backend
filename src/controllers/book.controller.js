@@ -4,16 +4,21 @@ import * as BookService from '../services/book.service.js';
 // GET all books
 export const getAllBooks = async (req, res, next) => {
   try {
-    const data = await BookService.getAllBooks();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const data = await BookService.getAllBooks(page, limit);
+
     res.status(HttpStatus.OK).json({
       code: HttpStatus.OK,
       data,
-      message: 'All books fetched successfully'
+      message: 'Books fetched successfully with pagination'
     });
   } catch (error) {
     next(error);
   }
 };
+
 
 // GET book by ID
 export const getBookById = async (req, res, next) => {
@@ -101,6 +106,48 @@ export const deleteBook = async (req, res, next) => {
       code: HttpStatus.OK,
       data: {},
       message: 'Book deleted successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const searchBooks = async (req, res, next) => {
+  try {
+    const searchQuery = req.query.query;
+    if (!searchQuery) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        code: HttpStatus.BAD_REQUEST,
+        data: {},
+        message: 'Search query is required'
+      });
+    }
+
+    const data = await BookService.searchBooks(searchQuery);
+    res.status(HttpStatus.OK).json({
+      code: HttpStatus.OK,
+      data,
+      message: 'Books search completed successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const sortBooks = async (req, res, next) => {
+  try {
+    const sortBy = req.query.sortBy || 'relevance';
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    console.log("*********************"+sortBy, page, limit);
+
+    const data = await BookService.getAllBooks(page, limit, sortBy);
+
+    res.status(HttpStatus.OK).json({
+      code: HttpStatus.OK,
+      data,
+      message: 'Books sorted successfully'
     });
   } catch (error) {
     next(error);
