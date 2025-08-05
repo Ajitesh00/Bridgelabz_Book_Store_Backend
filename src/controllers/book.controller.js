@@ -140,8 +140,6 @@ export const sortBooks = async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
-    console.log("*********************"+sortBy, page, limit);
-
     const data = await BookService.getAllBooks(page, limit, sortBy);
 
     res.status(HttpStatus.OK).json({

@@ -7,10 +7,6 @@ export const getAllBooks = async (page, limit, sortBy) => {
   try {
     const offset = (page - 1) * limit;
 
-
-    console.log("**************"+sortBy);
-
-
     let order = [];
     
     switch (sortBy) {
@@ -26,10 +22,6 @@ export const getAllBooks = async (page, limit, sortBy) => {
       default:
         order = [['id', 'ASC']]; // Default sort: relevance
     }
-
-
-    console.log('*******************************Order:', order);
-
 
     const { count, rows } = await Book.findAndCountAll({
       offset,

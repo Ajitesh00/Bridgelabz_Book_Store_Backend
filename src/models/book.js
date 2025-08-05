@@ -7,6 +7,10 @@ module.exports = (sequelize, DataTypes) => {
       Book.belongsTo(models.Admin, {
         foreignKey: 'admin_user_id'
       });
+
+      Book.hasMany(models.Cart, { foreignKey: 'book_id' });
+      
+      Book.hasMany(models.Wishlist, { foreignKey: 'book_id' });
     }
   }
 
